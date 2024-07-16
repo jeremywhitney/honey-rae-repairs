@@ -12,12 +12,21 @@ export const TicketList = ({ currentUser }) => {
 
   const getAndSetTickets = () => {
     getAllTickets().then((ticketsArray) => {
-      setAllTickets(ticketsArray);
+      if (currentUser.isStaff) {
+        setAllTickets(ticketsArray);
+      } else {
+        const customerTickets = ticketsArray.filter(
+          (ticket) => ticket.userId === currentUser.id
+        );
+        setAllTickets(customerTickets);
+      }
     });
   };
 
   // useEffect takes a function (callback function; what we want to happen), and an array (dependency array; when we want it to happen)
-  useEffect(() => {getAndSetTickets()}, []);
+  useEffect(() => {
+    getAndSetTickets();
+  }, [currentUser]);
 
   useEffect(() => {
     if (showEmergencyOnly) {
