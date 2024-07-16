@@ -4,19 +4,20 @@ import "./Tickets.css";
 import { Ticket } from "./Ticket";
 import { TicketFilterBar } from "./TicketFilterBar";
 
-export const TicketList = () => {
+export const TicketList = ({ currentUser }) => {
   const [allTickets, setAllTickets] = useState([]);
   const [showEmergencyOnly, setShowEmergencyOnly] = useState(false);
   const [filteredTickets, setFilteredTickets] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // useEffect takes a function (callback function; what we want to happen), and an array (dependency array; when we want it to happen)
-  useEffect(() => {
+  const getAndSetTickets = () => {
     getAllTickets().then((ticketsArray) => {
       setAllTickets(ticketsArray);
-      console.log("tickets set!");
     });
-  }, []); // ONLY runs on intitial render of component
+  };
+
+  // useEffect takes a function (callback function; what we want to happen), and an array (dependency array; when we want it to happen)
+  useEffect(() => {getAndSetTickets()}, []);
 
   useEffect(() => {
     if (showEmergencyOnly) {
@@ -45,7 +46,14 @@ export const TicketList = () => {
       />
       <article className="tickets">
         {filteredTickets.map((ticketObj) => {
-          return <Ticket ticket={ticketObj} key={ticketObj.id} />;
+          return (
+            <Ticket
+              ticket={ticketObj}
+              currentUser={currentUser}
+              getAndSetTickets={getAndSetTickets}
+              key={ticketObj.id}
+            />
+          );
         })}
       </article>
     </div>
