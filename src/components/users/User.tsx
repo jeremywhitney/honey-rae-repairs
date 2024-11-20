@@ -1,6 +1,11 @@
+import { User as UserType } from "../../types/users"
 import "./User.css";
 
-export const User = ({ user }) => {
+interface UserProps {
+  user: UserType
+}
+
+export const User = ({ user }: UserProps) => {
   return (
     <div className="user">
       <div>
