@@ -4,3 +4,8 @@ export interface User {
   email: string;
   isStaff: boolean;
 }
+
+export interface StoredUser {
+  id: number;
+  isStaff: boolean;
+}

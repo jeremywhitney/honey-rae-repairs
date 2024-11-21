@@ -1,14 +1,8 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createUser, getUserByEmail } from "../../services/userService";
-import { User } from "../../types/users";
+import { StoredUser, User } from "../../types/users";
 import "./Login.css";
-
-// Type for the stored user data
-interface StoredUser {
-  id: number;
-  staff: boolean;
-}
 
 export const Register = () => {
   const [customer, setCustomer] = useState<Omit<User, "id">>({
@@ -23,7 +17,7 @@ export const Register = () => {
     if ("id" in createdUser) {
       const userToStore: StoredUser = {
         id: createdUser.id,
-        staff: createdUser.isStaff,
+        isStaff: createdUser.isStaff,
       };
       localStorage.setItem("honey_user", JSON.stringify(userToStore));
       navigate("/");
