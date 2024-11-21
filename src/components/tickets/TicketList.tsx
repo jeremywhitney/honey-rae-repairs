@@ -1,27 +1,32 @@
 import { useEffect, useState } from "react";
 import { getAllTickets } from "../../services/ticketService";
-import "./Tickets.css";
 import { Ticket } from "./Ticket";
 import { TicketFilterBar } from "./TicketFilterBar";
+import { StoredUser } from "../../types/users";
+import { ServiceTicketWithEmployees } from "../../types/tickets";
+import "./Tickets.css";
 
-export const TicketList = ({ currentUser }) => {
-  const [allTickets, setAllTickets] = useState([]);
-  const [showEmergencyOnly, setShowEmergencyOnly] = useState(false);
-  const [showOpenOnly, setShowOpenOnly] = useState(false);
-  const [filteredTickets, setFilteredTickets] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+interface TicketListProps {
+  currentUser: StoredUser;
+}
 
-  const getAndSetTickets = () => {
-    getAllTickets().then((ticketsArray) => {
-      if (currentUser.isStaff) {
-        setAllTickets(ticketsArray);
-      } else {
-        const customerTickets = ticketsArray.filter(
-          (ticket) => ticket.userId === currentUser.id
-        );
-        setAllTickets(customerTickets);
-      }
-    });
+export const TicketList = ({ currentUser }: TicketListProps) => {
+  const [allTickets, setAllTickets] = useState<ServiceTicketWithEmployees[]>([]);
+  const [showEmergencyOnly, setShowEmergencyOnly] = useState<boolean>(false);
+  const [showOpenOnly, setShowOpenOnly] = useState<boolean>(false);
+  const [filteredTickets, setFilteredTickets] = useState<ServiceTicketWithEmployees[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const getAndSetTickets = async () => {
+    const ticketsArray = await getAllTickets();
+    if (currentUser.isStaff) {
+      setAllTickets(ticketsArray);
+    } else {
+      const customerTickets = ticketsArray.filter(
+        (ticket) => ticket.userId === currentUser.id
+      );
+      setAllTickets(customerTickets);
+    }
   };
 
   // useEffect takes a function (callback function; what we want to happen), and an array (dependency array; when we want it to happen)

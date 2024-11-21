@@ -1,11 +1,20 @@
+import { ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { StoredUser } from "../../types/users";
+
+interface TicketFilterBarProps {
+  setShowEmergencyOnly: (value: boolean) => void;
+  setShowOpenOnly: (value: boolean) => void;
+  setSearchTerm: (value: string) => void;
+  currentUser: StoredUser;
+}
 
 export const TicketFilterBar = ({
   setShowEmergencyOnly,
   setShowOpenOnly,
   setSearchTerm,
   currentUser,
-}) => {
+}: TicketFilterBarProps) => {
   const navigate = useNavigate();
 
   return (
@@ -29,7 +38,7 @@ export const TicketFilterBar = ({
             Show All
           </button>
           <input
-            onChange={(event) => {
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
               setSearchTerm(event.target.value);
             }}
             type="text"

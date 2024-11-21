@@ -14,7 +14,7 @@ export const getAllTickets = async (): Promise<
 };
 
 export const assignTicket = async (
-  employeeTicket: EmployeeTicket
+  employeeTicket: Omit<EmployeeTicket, "id">
 ): Promise<EmployeeTicket> => {
   const response = await fetch(`http://localhost:8088/employeeTickets`, {
     method: "POST",
