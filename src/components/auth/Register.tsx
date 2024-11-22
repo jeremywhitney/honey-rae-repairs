@@ -1,48 +1,50 @@
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Login.css";
 import { createUser, getUserByEmail } from "../../services/userService";
+import { StoredUser, User } from "../../types/users";
+import "./Login.css";
 
-export const Register = (props) => {
-  const [customer, setCustomer] = useState({
+export const Register = () => {
+  const [customer, setCustomer] = useState<Omit<User, "id">>({
     email: "",
     fullName: "",
     isStaff: false,
   });
   let navigate = useNavigate();
 
-  const registerNewUser = () => {
-    createUser(customer).then((createdUser) => {
-      if (createdUser.hasOwnProperty("id")) {
-        localStorage.setItem(
-          "honey_user",
-          JSON.stringify({
-            id: createdUser.id,
-            staff: createdUser.isStaff,
-          })
-        );
-
-        navigate("/");
-      }
-    });
+  const registerNewUser = async () => {
+    const createdUser = await createUser(customer);
+    if ("id" in createdUser) {
+      const userToStore: StoredUser = {
+        id: createdUser.id,
+        isStaff: createdUser.isStaff,
+      };
+      localStorage.setItem("honey_user", JSON.stringify(userToStore));
+      navigate("/");
+    }
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     getUserByEmail(customer.email).then((response) => {
-      if (response.length > 0) {
-        // Duplicate email. No good.
+      if (response) {
         window.alert("Account with that email address already exists");
       } else {
-        // Good email, create user.
         registerNewUser();
       }
     });
   };
 
-  const updateCustomer = (evt) => {
+  const updateCustomer = (evt: ChangeEvent<HTMLInputElement>) => {
     const copy = { ...customer };
-    copy[evt.target.id] = evt.target.value;
+    if (evt.target.type === "checkbox") {
+      copy.isStaff = evt.target.checked;
+    } else {
+      // Handle text/email inputs
+      if (evt.target.id === "email" || evt.target.id === "fullName") {
+        copy[evt.target.id] = evt.target.value;
+      }
+    }
     setCustomer(copy);
   };
 
@@ -79,15 +81,7 @@ export const Register = (props) => {
         <fieldset>
           <div className="form-group">
             <label>
-              <input
-                onChange={(evt) => {
-                  const copy = { ...customer };
-                  copy.isStaff = evt.target.checked;
-                  setCustomer(copy);
-                }}
-                type="checkbox"
-                id="isStaff"
-              />
+              <input onChange={updateCustomer} type="checkbox" id="isStaff" />
               I am an employee{" "}
             </label>
           </div>

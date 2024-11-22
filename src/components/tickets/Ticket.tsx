@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
 import { getAllEmployees } from "../../services/employeeService";
-import {
-  assignTicket,
-  deleteTicket,
-  updateTicket,
-} from "../../services/ticketService";
+import { assignTicket, deleteTicket, updateTicket } from "../../services/ticketService";
+import { EmployeeTicket, ServiceTicket, ServiceTicketWithEmployees } from "../../types/tickets";
+import { StoredUser } from "../../types/users";
+import { EmployeeWithUserObject } from "../../types/employees";
 
-export const Ticket = ({ ticket, currentUser, getAndSetTickets }) => {
-  const [employees, setEmployees] = useState([]);
-  const [assignedEmployee, setAssignedEmployee] = useState({});
+interface TicketProps {
+  ticket: ServiceTicketWithEmployees;
+  currentUser: StoredUser;
+  getAndSetTickets: () => Promise<void>;
+}
+
+export const Ticket = ({ ticket, currentUser, getAndSetTickets }: TicketProps) => {
+  const [employees, setEmployees] = useState<EmployeeWithUserObject[]>([]);
+  const [assignedEmployee, setAssignedEmployee] = useState<EmployeeWithUserObject | null>(null);
 
   useEffect(() => {
     getAllEmployees().then((employeesArray) => {
@@ -20,7 +25,7 @@ export const Ticket = ({ ticket, currentUser, getAndSetTickets }) => {
     const foundEmployee = employees.find(
       (e) => e.id === ticket.employeeTickets[0]?.employeeId // ? is the optional chaining operator
     );
-    setAssignedEmployee(foundEmployee);
+    setAssignedEmployee(foundEmployee || null);
   }, [employees, ticket]);
 
   const handleClaim = () => {
@@ -28,8 +33,8 @@ export const Ticket = ({ ticket, currentUser, getAndSetTickets }) => {
       (employee) => employee.userId === currentUser.id
     );
 
-    const newEmployeeTicket = {
-      employeeId: currentEmployee.id,
+    const newEmployeeTicket: Omit<EmployeeTicket, "id"> = {
+      employeeId: currentEmployee!.id,
       serviceTicketId: ticket.id,
     };
 
@@ -39,12 +44,12 @@ export const Ticket = ({ ticket, currentUser, getAndSetTickets }) => {
   };
 
   const handleClose = () => {
-    const closedTicket = {
+    const closedTicket: ServiceTicket = {
       id: ticket.id,
-      user: ticket.userId,
+      userId: ticket.userId,
       description: ticket.description,
       emergency: ticket.emergency,
-      dateCompleted: new Date(),
+      dateCompleted: new Date().toISOString(),
     };
 
     updateTicket(closedTicket).then(() => {

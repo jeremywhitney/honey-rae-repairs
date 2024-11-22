@@ -1,27 +1,23 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import "./Login.css";
+import { FormEvent, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { getUserByEmail } from "../../services/userService";
+import { StoredUser } from "../../types/users";
+import "./Login.css";
 
 export const Login = () => {
-  const [email, set] = useState("hpassfield7@netvibes.com");
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    getUserByEmail(email).then((foundUsers) => {
-      if (foundUsers.length === 1) {
-        const user = foundUsers[0];
-        localStorage.setItem(
-          "honey_user",
-          JSON.stringify({
-            id: user.id,
-            isStaff: user.isStaff,
-          })
-        );
-
+    getUserByEmail(email).then((response) => {
+      if (response) {
+        const userToStore: StoredUser = {
+          id: response.id,
+          isStaff: response.isStaff,
+        };
+        localStorage.setItem("honey_user", JSON.stringify(userToStore));
         navigate("/");
       } else {
         window.alert("Invalid login");
@@ -40,7 +36,7 @@ export const Login = () => {
               <input
                 type="email"
                 value={email}
-                onChange={(evt) => set(evt.target.value)}
+                onChange={(evt) => setEmail(evt.target.value)}
                 className="form-control"
                 placeholder="Email address"
                 required
