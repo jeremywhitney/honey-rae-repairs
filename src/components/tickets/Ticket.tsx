@@ -13,8 +13,7 @@ interface TicketProps {
 
 export const Ticket = ({ ticket, currentUser, getAndSetTickets }: TicketProps) => {
   const [employees, setEmployees] = useState<EmployeeWithUserObject[]>([]);
-  const [assignedEmployee, setAssignedEmployee] =
-    useState<EmployeeWithUserObject | null>(null);
+  const [assignedEmployee, setAssignedEmployee] = useState<EmployeeWithUserObject | null>(null);
 
   useEffect(() => {
     getAllEmployees().then((employeesArray) => {

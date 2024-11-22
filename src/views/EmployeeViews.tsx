@@ -7,8 +7,13 @@ import { EmployeeDetails } from "../components/employees/EmployeeDetails";
 import { CustomerList } from "../components/customers/CustomersList";
 import { CustomerDetails } from "../components/customers/CustomerDetails";
 import { EmployeeForm } from "../components/forms/EmployeeForm";
+import { StoredUser } from "../types/users";
 
-export const EmployeeViews = ({ currentUser }) => {
+interface EmployeeViewsProps {
+  currentUser: StoredUser;
+}
+
+export const EmployeeViews = ({ currentUser }: EmployeeViewsProps) => {
   return (
     <Routes>
       <Route
